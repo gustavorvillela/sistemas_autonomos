@@ -17,7 +17,7 @@ def sample_normal_distribution(b2):
 
     rands = np.array([random.uniform(-b,b) for _ in range(12)])
     s = 0.5 * np.sum(rands)  # Central limit theorem: sum of uniform distributions approximates normal distribution
-     
+    
     return s
 
 def generate_triangular_distribution(b2):

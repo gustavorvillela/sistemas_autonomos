@@ -98,3 +98,39 @@ def odometry_prob_grid(grid, x_prev,angle_cur, odo_prev, odo_curr, alphas):
     probabilities = np.array([motion_model_odometry(x_prev, (point[0], point[1],angle_cur), odo_prev, odo_curr, alphas) for point in grid])
     
     return probabilities
+
+def sample_motion_model_velocity(x_prev, u, alphas, delta_t, num_samples=1000):
+    """
+    Gera partículas para o modelo de movimento por velocidade com ruído.
+    x_prev: pose anterior (x, y, theta)
+    u: controle (v, w)
+    alphas: ruído [α1...α6]
+    """
+    v, w = u
+    x, y, theta = x_prev
+    particles = []
+
+    for _ in range(num_samples):
+        # Adiciona ruído aos comandos de controle
+        v_hat = v + sample_normal_distribution(alphas[0] * v**2 + alphas[1] * w**2)
+        w_hat = w + sample_normal_distribution(alphas[2] * v**2 + alphas[3] * w**2)
+        gamma_hat = sample_normal_distribution(alphas[4] * v**2 + alphas[5] * w**2)
+
+        if abs(w_hat) > 1e-6:
+            r_hat = v_hat / w_hat
+            dx = -r_hat * np.sin(theta) + r_hat * np.sin(theta + w_hat * delta_t)
+            dy = r_hat * np.cos(theta) - r_hat * np.cos(theta + w_hat * delta_t)
+        else:
+            # Movimento quase retilíneo
+            dx = v_hat * delta_t * np.cos(theta)
+            dy = v_hat * delta_t * np.sin(theta)
+
+        dtheta = w_hat * delta_t + gamma_hat * delta_t
+
+        x_new = x + dx
+        y_new = y + dy
+        theta_new = theta + dtheta
+
+        particles.append((x_new, y_new, theta_new))
+
+    return np.array(particles)
