@@ -8,9 +8,7 @@ from calculate_prob import (
 )
 
 def motion_model_velocity(x_t, u_t, x_prev, dt:float, alpha) -> float:
-    """
-    Modelo de movimento baseado em velocidade para robótica móvel
-    
+    """    
     Args:
         x_t: Estado atual [x', y', θ'] (numpy array ou lista)
         u_t: Comando de controle [v, ω] (numpy array ou lista)
@@ -131,7 +129,6 @@ plt.imshow(prob_grid_normalized,
            cmap='viridis')
 plt.colorbar(label='Probabilidade')
 
-# plt.scatter(x_prev[0], x_prev[1], c='black', s=100, label='Estado Anterior')
 r = 0.025
 
 circle_prev = Circle((x_prev[0], x_prev[1]), r, color='green', ec='black', alpha=0.7, label='Previous Robot')
@@ -155,6 +152,3 @@ plt.plot(x_vals, y_vals, 'r--', alpha=0.7, label='Trajetória Esperada')
 
 plt.legend()
 plt.show()
-
-# for i in prob_grid:
-#   print(i*100000)
