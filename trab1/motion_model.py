@@ -44,7 +44,7 @@ def generate_motion_model_particles(x_prev, odo_prev, odo_curr, alphas, num_samp
     
     return np.array(particles)
 
-def motion_model_odometry(x_prev,x_curr, odo_prev, odo_curr, alphas, num_samples=1000):
+def motion_model_odometry(x_prev,x_curr, odo_prev, odo_curr, alphas):
    
     """
     Calcula a probabilidade de acordo com o modelo de movimento por odometria.
@@ -55,7 +55,6 @@ def motion_model_odometry(x_prev,x_curr, odo_prev, odo_curr, alphas, num_samples
     odo_prev (tuple): Odometria anterior (xb, yb, thetab).
     odo_curr (tuple): Odometria atual (xbp, ybp, thetabp).
     alphas (list): Parâmetros de ruído do modelo de movimento.
-    num_samples (int): Número de partículas a serem geradas.
     
     Returns:
     np.ndarray: Partículas geradas pelo modelo de movimento.
@@ -79,3 +78,23 @@ def motion_model_odometry(x_prev,x_curr, odo_prev, odo_curr, alphas, num_samples
     p3 = prob_normal_distribution(delta_rot2 - delta_rot2_hat, alphas[4] * abs(delta_rot2) + alphas[5] * delta_trans)
 
     return p1*p2*p3
+
+
+def odometry_prob_grid(grid, x_prev,angle_cur, odo_prev, odo_curr, alphas):
+    """
+    Calcula a probabilidade de cada ponto da grade de acordo com o modelo de movimento por odometria.
+    
+    Parameters:
+    grid (np.ndarray): Grade de pontos (Nx2).
+    x_prev (tuple): Posição e orientação anterior do robô (x, y, theta).
+    odo_prev (tuple): Odometria anterior (xb, yb, thetab).
+    odo_curr (tuple): Odometria atual (xbp, ybp, thetabp).
+    alphas (list): Parâmetros de ruído do modelo de movimento.
+    
+    Returns:
+    np.ndarray: Probabilidades para cada ponto da grade.
+    """
+    
+    probabilities = np.array([motion_model_odometry(x_prev, (point[0], point[1],angle_cur), odo_prev, odo_curr, alphas) for point in grid])
+    
+    return probabilities

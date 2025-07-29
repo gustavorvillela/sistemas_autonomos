@@ -75,8 +75,8 @@ if __name__ == "__main__":
     plot_odometry_particles(x_prev, x_real, particles, r=0.1)
 '''''''''
 import numpy as np
-from motion_model import sample_motion_model_odometry, generate_motion_model_particles
-from plot_utils import plot_odometry_particles
+from motion_model import odometry_prob_grid, generate_motion_model_particles
+from plot_utils import plot_odometry_particles,generate_grid,plot_prob_odom
 # Make sure generate_samples.py exists in the same directory or is accessible in your Python path
 from generate_samples import sample_normal_distribution
 
@@ -88,7 +88,15 @@ if __name__ == "__main__":
     odo_prev = (0.0, 0.0, 0.0)
     odo_curr = (1.05, 0.55, np.pi/7)
 
-    alphas = [0.1]*6
-    particles = generate_motion_model_particles(x_prev, odo_prev, odo_curr, alphas, num_samples=2000)
+    #alphas = [0.1]*6
+    alphas = [0.5, 0.5, 0.1, 0.1, 0.5, 0.5]  # Parâmetros de ruído do modelo de movimento
+    particles = generate_motion_model_particles(x_prev, odo_prev, odo_curr, alphas, num_samples=1000)
 
     plot_odometry_particles(x_prev, x_real, particles, r=0.1)
+
+    # Plot probabilities
+
+    grid = generate_grid((-2, 2), (-2, 2), num_points=100)
+    probabilities = odometry_prob_grid(grid, x_prev,x_real[2], odo_prev, odo_curr, alphas)
+
+    plot_prob_odom(grid, probabilities, x_prev, x_real, r=0.1, title="Odometry Probability Distribution")
