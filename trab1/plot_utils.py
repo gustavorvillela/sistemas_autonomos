@@ -3,6 +3,7 @@ from matplotlib.patches import Circle
 import numpy as np
 
 def plot_odometry_particles(x_prev, x_next_est, particles, r=0.1, title="Odometry Motion Model - Particles"):
+    
     plt.figure(figsize=(8, 6))
     plt.title(title)
     plt.xlabel("Position x")

@@ -75,7 +75,7 @@ if __name__ == "__main__":
     plot_odometry_particles(x_prev, x_real, particles, r=0.1)
 '''''''''
 import numpy as np
-from motion_model import sample_motion_model_odometry
+from motion_model import sample_motion_model_odometry, generate_motion_model_particles
 from plot_utils import plot_odometry_particles
 # Make sure generate_samples.py exists in the same directory or is accessible in your Python path
 from generate_samples import sample_normal_distribution
@@ -89,6 +89,6 @@ if __name__ == "__main__":
     odo_curr = (1.05, 0.55, np.pi/7)
 
     alphas = [0.1]*6
-    particles = sample_motion_model_odometry(x_prev, odo_prev, odo_curr, alphas, num_samples=2000)
+    particles = generate_motion_model_particles(x_prev, odo_prev, odo_curr, alphas, num_samples=2000)
 
     plot_odometry_particles(x_prev, x_real, particles, r=0.1)
