@@ -54,13 +54,13 @@ def plot_velocity_particles(x_prev, x_next_est, particles, r=0.1, title="Velocit
     plt.ylabel("Position y")
     plt.grid(True)
 
-    plt.scatter(particles[:, 0], particles[:, 1], s=1, color='yellow', alpha=0.5, label="Particles")
+    plt.scatter(particles[:, 0], particles[:, 1], s=1, color='blue', alpha=0.5, label="Particles")
     add_robot_mov(x_prev, x_next_est, r)
 
     plt.axis("equal")
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    #plt.show()
 
 
 # ============================

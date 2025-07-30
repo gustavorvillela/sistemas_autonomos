@@ -1,4 +1,5 @@
 import numpy as np
+import math
 from generate_samples import sample_normal_distribution
 from calculate_prob import *
 
@@ -224,7 +225,7 @@ def normalize_angle(theta):
     """Normaliza um ângulo para o intervalo [-pi, pi]"""
     return (theta + np.pi) % (2 * np.pi) - np.pi
 
-def sample_motion_model_velocity(x_prev, u, alphas, delta_t, num_samples=1000):
+def sample_motion_model_velocity(x_prev, u, alphas, delta_t):
     """
     Gera partículas para o modelo de movimento por velocidade com ruído.
     x_prev: pose anterior (x, y, theta)
@@ -233,31 +234,61 @@ def sample_motion_model_velocity(x_prev, u, alphas, delta_t, num_samples=1000):
     """
     v, w = u
     x, y, theta = x_prev
-    particles = []
+    
+    # Adiciona ruído aos comandos de controle
+    v_hat = v + sample_normal_distribution(alphas[0] * abs(v)**2 + alphas[1] * abs(w)**2)
+    w_hat = w + sample_normal_distribution(alphas[2] * abs(v)**2 + alphas[3] * abs(w)**2)
+    gamma_hat = sample_normal_distribution(alphas[4] * abs(v)**2 + alphas[5] * abs(w)**2)
 
-    for _ in range(num_samples):
-        # Adiciona ruído aos comandos de controle
-        v_hat = v + sample_normal_distribution(alphas[0] * abs(v)**2 + alphas[1] * abs(w)**2)
-        w_hat = w + sample_normal_distribution(alphas[2] * abs(v)**2 + alphas[3] * abs(w)**2)
-        gamma_hat = sample_normal_distribution(alphas[4] * abs(v)**2 + alphas[5] * abs(w)**2)
+    theta_hat = theta + w_hat * delta_t 
 
-        if abs(w_hat) > 1e-6:
-            r_hat = v_hat / w_hat
-            dx = -r_hat * np.sin(theta) + r_hat * np.sin(theta + w_hat * delta_t)
-            dy = r_hat * np.cos(theta) - r_hat * np.cos(theta + w_hat * delta_t)
-        else:
-            dx = v_hat * delta_t * np.cos(theta)
-            dy = v_hat * delta_t * np.sin(theta)
+    #if abs(w_hat) > 1e-6:
+    r_hat = v_hat / w_hat
+    dx = -r_hat * np.sin(theta) + r_hat * np.sin(theta_hat)
+    dy = r_hat * np.cos(theta) - r_hat * np.cos(theta_hat)
+    #else:
+    #    dx = v_hat * delta_t * np.cos(theta)
+    #    dy = v_hat * delta_t * np.sin(theta)
 
-        dtheta = w_hat * delta_t + gamma_hat * delta_t
+    dtheta = w_hat * delta_t + gamma_hat * delta_t
 
-        x_new = x + dx
-        y_new = y + dy
-        theta_new = normalize_angle(theta + dtheta)
+    x_new = x + dx
+    y_new = y + dy
+    theta_new = normalize_angle(theta + dtheta)
 
-        particles.append((x_new, y_new, theta_new))
+    particle = (x_new, y_new, theta_new)
+    
+    return particle
 
-    return np.array(particles)
+def deterministic_motion_model_velocity(x_prev, u, delta_t):
+    """
+    Gera partículas para o modelo de movimento por velocidade com ruído.
+    x_prev: pose anterior (x, y, theta)
+    u: controle (v, w)
+    alphas: ruído [α1...α6]
+    """
+    v, w = u
+    x, y, theta = x_prev
+    
+    v_hat = v 
+    w_hat = w 
+
+    theta_hat = theta + w_hat * delta_t 
+
+    r_hat = v_hat / w_hat
+    dx = -r_hat * np.sin(theta) + r_hat * np.sin(theta_hat)
+    dy = r_hat * np.cos(theta) - r_hat * np.cos(theta_hat)
+
+
+    dtheta = w_hat * delta_t
+
+    x_new = x + dx
+    y_new = y + dy
+    theta_new = normalize_angle(theta + dtheta)
+
+    particle = (x_new, y_new, theta_new)
+    
+    return particle
 
 
 def generate_motion_model_velocity_particles(x_prev, u, alphas, delta_t, num_samples=1000):
@@ -287,33 +318,37 @@ def prob_velocity_model(x_prev, x_curr, u, alphas, delta_t):
     xc, yc, thetac = x_curr
     v, w = u
 
-    if abs(w) > 1e-6:
-        r = v / w
-        dx = -r * np.sin(theta) + r * np.sin(theta + w * delta_t)
-        dy = r * np.cos(theta) - r * np.cos(theta + w * delta_t)
-    else:
-        dx = v * delta_t * np.cos(theta)
-        dy = v * delta_t * np.sin(theta)
+    num = (x - xc) * np.cos(theta) + (y - yc) * np.sin(theta)
+    denom = (y - yc) * np.cos(theta) - (x - xc) * np.sin(theta)
 
-    x_exp = x + dx
-    y_exp = y + dy
-    theta_exp = normalize_angle(theta + w * delta_t)
+    mu = (0.5 * num) / denom if not math.isclose(denom, 0, abs_tol=1e-6) else 0.0
 
-    # Erros entre a pose estimada e a atual
-    dx_err = xc - x_exp
-    dy_err = yc - y_exp
-    dtheta_err = normalize_angle(thetac - theta_exp)
+    x_star = (x + xc) / 2.0 + mu * (y - yc)
+    y_star = (y + yc) / 2.0 + mu * (xc - x)
+
+    r_star = np.sqrt((x - x_star)**2 + (y - y_star)**2)
+
+    delta_theta = normalize_angle(np.arctan2(yc - y_star, xc - x_star) - np.arctan2(y - y_star, x - x_star))
+
+    w_hat = delta_theta / delta_t
+    v_hat = w_hat * r_star
+    gamma_hat = (thetac - theta) / delta_t - w_hat
 
     # Cálculo das variâncias
     var_x = alphas[0] * abs(v)**2 + alphas[1] * abs(w)**2
     var_y = alphas[2] * abs(v)**2 + alphas[3] * abs(w)**2
     var_theta = alphas[4] * abs(v)**2 + alphas[5] * abs(w)**2
 
-    p1 = prob_normal_distribution(dx_err, var_x)
-    p2 = prob_normal_distribution(dy_err, var_y)
-    p3 = prob_normal_distribution(dtheta_err, var_theta)
+    # Erros
+    v_err = v - v_hat
+    w_err = w - w_hat
+
+    p1 = prob_normal_distribution(v_err, var_x)
+    p2 = prob_normal_distribution(w_err, var_y)
+    p3 = prob_normal_distribution(gamma_hat, var_theta)
 
     return p1 * p2 * p3
+
 
 def velocity_prob_grid(grid, x_prev, angle_cur, u, alphas, delta_t):
     """
