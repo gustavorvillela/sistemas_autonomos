@@ -41,7 +41,6 @@ def plot_odometry_particles(x_prev, x_next_est, particles, r=0.1, title="Odometr
     plt.axis("equal")
     plt.legend()
     plt.tight_layout()
-    plt.show()
 
 
 # ============================
@@ -67,7 +66,7 @@ def plot_velocity_particles(x_prev, x_next_est, particles, r=0.1, title="Velocit
 # Plotagem de mapa de probabilidade (odometria)
 # ============================
 def plot_prob_odom(grid_points, probabilities, x_prev, x_next_est, r=0.1, title="Odometry Model - Probability Map"):
-    plt.figure(figsize=(6, 6))
+    plt.figure(figsize=(8, 6))
     plt.tricontourf(grid_points[:, 0], grid_points[:, 1], probabilities, levels=100, cmap='viridis')
     plt.colorbar(label='Probability Density')
 

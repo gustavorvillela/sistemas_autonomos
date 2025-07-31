@@ -16,12 +16,12 @@ if __name__ == "__main__":
     
 
     # Parâmetros do modelo
-    alphas = [0.01, 0.01, 0.5, 0.5, 0.1, 0.1]  # Parâmetros de ruído
+    alphas = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]  # Parâmetros de ruído
     delta_t = 1
     xvel = deterministic_motion_model_velocity(x_prev, u, delta_t)
 
     # Gerar partículas a partir do modelo de movimento por velocidade
-    particles = generate_motion_model_velocity_particles(x_prev, u, alphas, delta_t, num_samples=1000)
+    particles = generate_motion_model_velocity_particles(x_prev, u, alphas, delta_t, num_samples=10000)
     plot_velocity_particles(x_prev, xvel, particles, r=0.1)
 
     # Gerar grade e calcular probabilidades para a nuvem

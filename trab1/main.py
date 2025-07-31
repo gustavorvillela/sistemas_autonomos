@@ -89,8 +89,8 @@ if __name__ == "__main__":
     odo_curr = (1.05, 0.55, np.pi/7)
 
     #alphas = [0.1]*6
-    alphas = [0.5, 0.5, 0.1, 0.1, 0.5, 0.5]  # Parâmetros de ruído do modelo de movimento
-    particles = generate_motion_model_particles(x_prev, odo_prev, odo_curr, alphas, num_samples=1000)
+    alphas = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]  # Parâmetros de ruído do modelo de movimento
+    particles = generate_motion_model_particles(x_prev, odo_prev, odo_curr, alphas, num_samples=10000)
 
     plot_odometry_particles(x_prev, x_real, particles, r=0.1)
 

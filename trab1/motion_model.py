@@ -100,6 +100,11 @@ def odometry_prob_grid(grid, x_prev, angle_cur, odo_prev, odo_curr, alphas):
 
     probabilities = np.array(
         [motion_model_odometry(x_prev, (point[0], point[1], angle_cur), odo_prev, odo_curr, alphas) for point in grid])
+    
+    # Normalização: garante soma total igual a 1
+    total = np.sum(probabilities)
+    if total > 0:
+        probabilities /= total
 
     return probabilities
 
@@ -243,9 +248,9 @@ def prob_velocity_model(x_prev, x_curr, u, alphas, delta_t):
     gamma_hat = normalize_angle(thetac - theta) / delta_t - w_hat
 
     # Variances based on noise
-    var_v = alphas[0] * v**2 + alphas[1] * w**2
-    var_w = alphas[2] * v**2 + alphas[3] * w**2
-    var_gamma = alphas[4] * v**2 + alphas[5] * w**2
+    var_v = alphas[0] * abs(v) + alphas[1] * abs(w)
+    var_w = alphas[2] * abs(v) + alphas[3] * abs(w)
+    var_gamma = alphas[4] * abs(v) + alphas[5] * abs(w)
 
     # Errors between commanded and estimated
     v_err = v - v_hat

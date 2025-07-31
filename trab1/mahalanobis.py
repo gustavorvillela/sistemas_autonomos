@@ -30,8 +30,8 @@ def plot_mahalanobis_distance(mu, S, N, n=3):
     
     # Plotting
     plt.figure(figsize=(8, 6))
-    plt.scatter(points[:, 0], points[:, 1], alpha=0.3, s=5, label='All Points')
-    plt.scatter(within_n[:, 0], within_n[:, 1], color='blue', alpha=0.6, s=5, label=f'Points within {n} Mahalanobis norm')
+    plt.scatter(points[:, 0], points[:, 1], alpha=0.3,color='red', s=2, label='All Points')
+    plt.scatter(within_n[:, 0], within_n[:, 1], color='blue', alpha=0.6, s=2, label=f'Points within {n} Mahalanobis norm')
     
     edge_colors = ['red', 'orange', 'blue', 'purple', 'cyan']
     
@@ -41,7 +41,7 @@ def plot_mahalanobis_distance(mu, S, N, n=3):
         height = i * height_base
         ellipse = Ellipse(xy=mu, width=width, height=height,
                           angle=angle, edgecolor=edge_color,
-                          facecolor='none', linestyle='--', label=f'{i} $\sigma$')
+                          facecolor='none', linestyle='--', label=f'{i} $\sigma$',linewidth=1.5)
         plt.gca().add_patch(ellipse)
 
     # Draw principal axes (major and minor)
