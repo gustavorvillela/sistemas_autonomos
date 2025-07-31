@@ -76,7 +76,7 @@ if __name__ == "__main__":
 '''''''''
 import numpy as np
 from motion_model import odometry_prob_grid, generate_motion_model_particles
-from plot_utils import plot_odometry_particles,generate_grid,plot_prob_odom
+from plot_utils import plot_odometry_particles,generate_grid,plot_prob_odom, plot_prob_velocity
 # Make sure generate_samples.py exists in the same directory or is accessible in your Python path
 from generate_samples import sample_normal_distribution
 
@@ -99,4 +99,4 @@ if __name__ == "__main__":
     grid = generate_grid((-2, 2), (-2, 2), num_points=100)
     probabilities = odometry_prob_grid(grid, x_prev,x_real[2], odo_prev, odo_curr, alphas)
 
-    plot_prob_odom(grid, probabilities, x_prev, x_real, r=0.1, title="Odometry Probability Distribution")
+    plot_prob_velocity(grid, probabilities, x_prev, x_real, r=0.1, title="Odometry Probability Distribution")
