@@ -88,23 +88,36 @@ def plot_prob_odom(grid_points, probabilities, x_prev, x_next_est, r=0.1, title=
 # Plotagem de mapa de probabilidade (velocidade)
 # ============================
 def plot_prob_velocity(grid_points, probabilities, x_prev, x_next_est, r=0.1, title="Velocity Model - Probability Map"):
-    plt.figure(figsize=(6, 6))
-    plt.tricontourf(grid_points[:, 0], grid_points[:, 1], probabilities, levels=100, cmap='plasma')
-    plt.colorbar(label='Probability Density')
+    
+    fig, ax = plt.subplots(figsize=(8, 6))
 
+    # Get bounds from grid
+    x_min, x_max = grid_points[:, 0].min(), grid_points[:, 0].max()
+    y_min, y_max = grid_points[:, 1].min(), grid_points[:, 1].max()
+
+    # Create filled contour plot
+    contour = ax.tricontourf(grid_points[:, 0], grid_points[:, 1], probabilities,
+                             levels=100, cmap='plasma')
+
+    # Fix background fill by setting limits before showing
+    ax.set_xlim(x_min, x_max)
+    ax.set_ylim(y_min, y_max)
+
+    # Add motion and robots
     add_robot_mov(x_prev, x_next_est, r)
 
-    plt.title(title)
-    plt.xlim(grid_points[:, 0].min(), grid_points[:, 0].max())
-    plt.ylim(grid_points[:, 1].min(), grid_points[:, 1].max())
-    plt.xlabel('X-axis')
-    plt.ylabel('Y-axis')
-    plt.axis('equal')
-    plt.legend()
-    plt.tight_layout()
-    # Corrigir espelhamento visual, se necessário
-    #plt.gca().invert_xaxis()  # Descomente se o gráfico parecer refletido
+    # Colorbar and labels
+    cbar = fig.colorbar(contour, ax=ax)
+    cbar.set_label('Probability Density')
 
+    ax.set_title(title)
+    ax.set_xlabel('X-axis')
+    ax.set_ylabel('Y-axis')
+    ax.set_aspect('equal')
+    ax.legend()
+
+    # Ensure layout and avoid clipping
+    plt.tight_layout()
     plt.show()
 
 
