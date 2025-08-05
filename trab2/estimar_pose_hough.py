@@ -83,20 +83,22 @@ def estimate_position(measurements, walls_world, initial_guess=(5.0, 5.0,math.pi
     return result.x
 
 
-walls_world = get_world()
+if __name__ == "__main__":
 
-# robo
-pose = (5.0, 5.0, np.pi/4)
+    walls_world = get_world()
 
-# angulos de raio
-beam_angles = np.linspace(-np.pi/2, np.pi/2, 8)
+    # robo
+    pose = (5.0, 5.0, np.pi/4)
 
-true_distances, true_points = simulate_lidar(pose, beam_angles, walls_world)
+    # angulos de raio
+    beam_angles = np.linspace(-np.pi/2, np.pi/2, 8)
 
-noisy_distances = [d + np.random.normal(0, 0.1) if d is not None else None 
-                    for d in true_distances]
+    true_distances, true_points = simulate_lidar(pose, beam_angles, walls_world)
 
-estimated_pose = estimate_position(noisy_distances, walls_world)
+    noisy_distances = [d + np.random.normal(0, 0.1) if d is not None else None 
+                        for d in true_distances]
 
-print(f"Pose real: {pose}")
-print(f"Pose estimada: {estimated_pose}")
+    estimated_pose = estimate_position(noisy_distances, walls_world)
+
+    print(f"Pose real: {pose}")
+    print(f"Pose estimada: {estimated_pose}")

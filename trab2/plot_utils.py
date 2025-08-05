@@ -65,6 +65,15 @@ def plot_combined_probabilities(z_exp, z_max, params):
     plt.legend()
     plt.show()
 
+def plot_map(image):
+
+    
+    plt.imshow(image)
+    plt.title('Map')
+    plt.grid(True)
+    plt.axis('on')
+    
+
 
 if __name__ == "__main__":
 

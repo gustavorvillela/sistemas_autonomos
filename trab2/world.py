@@ -1,7 +1,8 @@
 import numpy as np
 import cv2
 from matplotlib.backends.backend_agg import FigureCanvasAgg
-
+import matplotlib.pyplot as plt
+from plot_utils import plot_map
 from map import load_map, make_map
 
 
@@ -44,18 +45,20 @@ def hough(image):
             walls_detected.append(((x1, y1), (x2, y2)))
     return walls_detected
   
-def get_world():
-  # Cria figura
-  fig = make_map()
+def get_world(plot=True):
+    # Cria figura
+    fig = make_map()
 
-  # Renderiza para array
-  image = renders_to_array(fig)
+    # Renderiza para array
+    image = renders_to_array(fig)
+    if plot:
+        plot_map(image)
 
-  # Converte e detecta bordas
-  walls_detected = hough(image)
+    # Converte e detecta bordas
+    walls_detected = hough(image)
 
 
-  walls_world = pixel_to_world(walls_detected, image.shape)
-  return walls_world
+    walls_world = pixel_to_world(walls_detected, image.shape)
+    return walls_world
 
   

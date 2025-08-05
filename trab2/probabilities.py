@@ -22,7 +22,7 @@ def p_random(z, z_max):
 
 def p_max(z, z_max):
     """Calcula a probabilidade de um ponto z máximo."""
-    return 1 if abs(z - z_max) <= 0.5 else 0
+    return 1 if abs(z - z_max) <= 0.1 else 0
 
 
 def calc_full_probabilities(ph_val, ps_val, pm_val, pr_val, theta):
