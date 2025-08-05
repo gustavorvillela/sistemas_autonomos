@@ -68,3 +68,6 @@ Makefile
 *.a
 *.dylib
 *.dll
+
+#python testes
+?.py
