@@ -1,5 +1,10 @@
 import math
+import numpy as np
 
+def get_beam_angles():
+    return np.linspace(-np.pi/2, np.pi/2, 8)
+def get_pose():
+    return (5.0, 5.0, np.pi/4)
 def ray_intersection(pose, angle, walls_world):
     """
     Calcula a interseção de um raio com as paredes do mapa
