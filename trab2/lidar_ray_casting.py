@@ -1,7 +1,4 @@
-import numpy as np
 import math
-
-from world import get_world
 
 def ray_intersection(pose, angle, walls_world):
     """
@@ -58,45 +55,3 @@ def simulate_lidar(pose, beam_angles, walls_world, max_range=20.0):
             points.append(None)
     
     return distances, points
-
-def estimate_position(measurements, walls_world,beam_angles, initial_guess=(5.0, 5.0,math.pi/4)):
-    """
-    Estimativa simples de posição usando mínimos quadrados
-    (Implementação básica - pode ser melhorada)
-    """
-    from scipy.optimize import minimize
-    
-    def cost_function(params):
-        x, y, theta = params
-        pose = (x, y, theta)
-        simulated_dists, _ = simulate_lidar(pose, beam_angles, walls_world)
-        
-        # Calcular erro entre medições simuladas e reais
-        error = 0
-        for sim_dist, meas_dist in zip(simulated_dists, measurements):
-            if meas_dist is not None and sim_dist is not None:
-                error += (sim_dist - meas_dist)**2
-        return error
-    
-    # Otimização para encontrar a pose que minimiza o erro
-    result = minimize(cost_function, initial_guess, method='L-BFGS-B')
-    return result.x
-
-
-# walls_world = get_world()
-
-# # robo
-# pose = (5.0, 5.0, np.pi/4)
-
-# # angulos de raio
-# beam_angles = np.linspace(-np.pi/2, np.pi/2, 8)
-
-# true_distances, true_points = simulate_lidar(pose, beam_angles, walls_world)
-
-# noisy_distances = [d + np.random.normal(0, 0.1) if d is not None else None 
-#                     for d in true_distances]
-
-# estimated_pose = estimate_position(noisy_distances, walls_world,beam_angles)
-
-# print(f"Pose real: {pose}")
-# print(f"Pose estimada: {estimated_pose}")
