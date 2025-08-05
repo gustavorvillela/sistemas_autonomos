@@ -46,7 +46,7 @@ def load_map():
     return x_bounds, y_bounds, fig_size, walls
 
 # Função principal que cria o mapa visual
-def make_map():
+def make_map(close=True):
     # Carrega as configurações do mapa
     x_bounds, y_bounds, fig_size, walls = load_map()
     
@@ -71,7 +71,8 @@ def make_map():
     # Remove os eixos (números e bordas) da visualização
     plt.axis('off')
     # Fecha a figura para que não seja mostrada imediatamente
-    plt.close()
+    if close:
+        plt.close()
     
     # Retorna a figura criada para que possa ser usada depois
-    return fig
+    return fig, ax
