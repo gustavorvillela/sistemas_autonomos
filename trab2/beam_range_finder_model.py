@@ -2,7 +2,7 @@ import numpy as np
 import math               
 import matplotlib.pyplot as plt  
 
-from lidar_ray_casting import simulate_lidar
+from lidar_ray_casting import simulate_lidar,get_beam_angles,get_pose
 from world import get_world,load_map
 # -----------------------------------------------------------------------------
 # FUNÇÕES DE PROBABILIDADE QUE DEFINEM OS QUATRO MODELOS DE RUÍDO DO SENSOR
@@ -138,14 +138,9 @@ def main():
     
     _,_,fig_size,_ = load_map()
     walls_world = get_world()
-    # 1. Define os ângulos do LIDAR (8 feixes distribuídos de -90° a +90°)
-    beam_angles = np.linspace(-np.pi/2, np.pi/2, 8)  # array com 8 ângulos igualmente espaçados
 
-    # 2. Define a pose real do robô (posição e orientação)
-    pose_real = (5.0, 5.0, np.pi/4)  # centro do mapa apontando 45°
-
-    # 3. Simula leituras reais do sensor (sem ruído) e adiciona ruído gaussiano
-    true_dists, _ = simulate_lidar(pose_real, beam_angles, walls_world)
+    # 1. Simula leituras reais do sensor (sem ruído) e adiciona ruído gaussiano
+    true_dists, _ = simulate_lidar(get_pose(), get_beam_angles(), walls_world)
     noisy_measurements = [d + np.random.normal(0, 0.1) for d in true_dists]  # ruído com desvio 0.1m
 
     # 4. Define os parâmetros do modelo probabilístico
@@ -216,7 +211,7 @@ def main():
     }
 
     # 5. Executa simulação: calcula probabilidade para cada ponto do mapa
-    xs, ys, prob_grid = simulate_beam_model_map(walls_world, noisy_measurements, params,beam_angles)
+    xs, ys, prob_grid = simulate_beam_model_map(walls_world, noisy_measurements, params,get_beam_angles())
 
     # 7. Plota o resultado como um "heatmap" (mapa de calor)
     
@@ -225,7 +220,7 @@ def main():
     plt.imshow(prob_grid, extent=[xs[0], xs[-1], ys[0], ys[-1]], origin='lower', cmap='hot')
     plt.colorbar(label="Probabilidade normalizada")
     # Marca a posição real do robô em azul
-    plt.plot(pose_real[0], pose_real[1], 'bo', label='Pose real')
+    plt.plot(get_pose()[0], get_pose()[1], 'bo', label='Pose real')
     plt.legend()
     plt.title("Mapa de probabilidade - Beam Range Finder Model")
     plt.show()
