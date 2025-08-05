@@ -47,7 +47,7 @@ def hough(image):
             walls_detected.append(((x1, y1), (x2, y2)))
     return walls_detected
 
-def pixel_to_world(lines_px, img_shape):
+def pixel_to_world(lines_px:list[tuple[tuple[float,float],tuple[float,float]]], img_shape) -> list[tuple[tuple[float,float],tuple[float,float]]]:
     """
     Converte linhas detectadas em pixels para coordenadas do mundo real.
     Parâmetros:
@@ -65,7 +65,7 @@ def pixel_to_world(lines_px, img_shape):
     # Obtém altura e largura da imagem
     height, width = img_shape[:2]
 
-    walls_world = []
+    walls_world:list[tuple[tuple[float,float],tuple[float,float]]] = []
     # Para cada linha detectada na imagem (em pixels)
     for (x1, y1), (x2, y2) in lines_px:
         # Converte coordenada X de pixel para mundo
@@ -85,7 +85,7 @@ def get_world():
     Função principal que obtém as paredes do mundo real
     """
     # 1. Cria a figura do mapa usando a função do módulo map
-    fig = make_map()
+    fig,ax = make_map()
 
     # 2. Converte a figura em uma imagem (array numpy)
     image = renders_to_array(fig)
