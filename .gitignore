@@ -68,3 +68,6 @@ Makefile
 *.a
 *.dylib
 *.dll
+
+#pytonh exemples
+?.py
