@@ -3,7 +3,7 @@ import math
 import matplotlib.pyplot as plt  
 
 from lidar_ray_casting import simulate_lidar,get_beam_angles,get_pose
-from world import get_world,load_map,make_map
+from map import load_map,make_map
 # -----------------------------------------------------------------------------
 # FUNÇÕES DE PROBABILIDADE QUE DEFINEM OS QUATRO MODELOS DE RUÍDO DO SENSOR
 # -----------------------------------------------------------------------------
@@ -152,9 +152,8 @@ def main():
         color='blue'
     )
     
-    _,_,fig_size,_ = load_map()
-    
-    walls_world = get_world()
+    _,_,fig_size,walls_world = load_map()
+
 
     # 1. Simula leituras reais do sensor (sem ruído) e adiciona ruído gaussiano
     true_dists, _ = simulate_lidar(get_pose(), get_beam_angles(), walls_world)
