@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from beam_range_finder_model import p_hit, p_short, p_max, p_rand, simulate_beam_model_map,get_pose
+from beam_range_finder_model import p_hit, p_short, p_max, p_random, simulate_beam_model_map,get_pose
 from lidar_ray_casting import simulate_lidar,get_beam_angles
 from map import load_map
 from numpy.typing import NDArray
@@ -86,7 +86,7 @@ def learn_intrinsic_parameters(Z:list[list[float]], X: list[tuple[float,float,fl
                 p1 = params["z_hit"]   * p_hit(z, z_star, params["sigma_hit"], max_range)
                 p2 = params["z_short"] * p_short(z, z_star, params["lambda_short"])
                 p3 = params["z_max"]   * p_max(z, max_range)
-                p4 = params["z_rand"]  * p_rand(z, max_range)
+                p4 = params["z_rand"]  * p_random(z, max_range)
 
                 eta = p1 + p2 + p3 + p4  # normalizador
                 if eta == 0:
@@ -256,14 +256,15 @@ def main():
 
     # 6. Mensagem no terminal
     if best_random_idx == 0 or dispersions[0] <= dispersions[best_random_idx]:
-        print("Parâmetro do learn_intrinsic_parameters é o de menor dispersão (ou empatado)!")
-        print(f"dispersão do learn_intrinsic_parameters: {best_dispersion}")
-        print(f"dispersão do menor parametro: {min(dispersions)}")
-        print(f"dispersão do segundo menor parametro: {sorted(dispersions)[1]}")
+        print("O parâmetro aprendido (learn_intrinsic_parameters) possui a MENOR dispersão (ou está empatado)")
+        print(f"Dispersão do aprendido: {dispersions[0]:.6f}")
+        print(f"Menor dispersão geral: {min(dispersions):.6f}")
+        print(f"Segunda menor dispersão: {sorted(dispersions)[1]:.6f}")
     else:
-        print("Parâmetro do learn_intrinsic_parameters NÃO é o de menor dispersão.")
-        print(f"Entropia do aprendido: {dispersions[0]:.4f}")
-        print(f"Menor entropia aleatória: {dispersions[best_random_idx]:.4f} (índice {best_random_idx})")
+        print("O parâmetro aprendido NÃO possui a menor dispersão")
+        print(f"Dispersão do aprendido: {dispersions[0]:.6f}")
+        print(f"Melhor dispersão aleatória: {dispersions[best_random_idx]:.6f}")
+        print(f"Diferença: {dispersions[0] - dispersions[best_random_idx]:.6f}")
 
     # 7. Plotar gráfico
     plt.figure(figsize=fig_size)

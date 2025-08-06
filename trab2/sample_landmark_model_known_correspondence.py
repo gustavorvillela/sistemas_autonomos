@@ -58,7 +58,7 @@ def main():
         detections = simulate_landmark_detections(pose_real, landmarks)
         for idx, detection in enumerate(detections):
             color = colors[idx % len(colors)]
-            samples = sample_landmark_model_known_correspondence(detection, landmarks, num_samples=100)
+            samples = sample_landmark_model_known_correspondence(detection, landmarks, num_samples=300)
             xs = [s[0] for s in samples]
             ys = [s[1] for s in samples]
             ax.scatter(xs, ys, s=10, color=color, alpha=0.5, label=f"Landmark {detection[0]}")
@@ -66,7 +66,7 @@ def main():
         # Legenda sem duplicatas
         handles, labels = ax.get_legend_handles_labels()
         by_label = dict(zip(labels, handles))
-        ax.legend(by_label.values(), by_label.keys())
+        ax.legend(by_label.values(), by_label.keys(), loc='upper left')
         ax.set_title("Sample Landmark Model - Vários Landmarks")
 
     # Criar animação

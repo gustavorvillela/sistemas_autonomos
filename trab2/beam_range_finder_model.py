@@ -48,9 +48,9 @@ def p_max(z, max_range):
     return 1.0 if z == max_range else 0.0
 
 
-def p_rand(z, max_range):
+def p_random(z, max_range):
     """
-    Modelo p_rand:
+    Modelo p_random:
     Modelo aleatório uniforme para ruído completamente aleatório.
     z        : valor medido
     max_range: alcance máximo do sensor
@@ -85,7 +85,7 @@ def beam_range_finder_model(zt, pose, walls_world, params,beam_angles):
         p = (params["z_hit"]   * p_hit(z, z_star, params["sigma_hit"], params["max_range"]) +
              params["z_short"] * p_short(z, z_star, params["lambda_short"]) +
              params["z_max"]   * p_max(z, params["max_range"]) +
-             params["z_rand"]  * p_rand(z, params["max_range"]))
+             params["z_rand"]  * p_random(z, params["max_range"]))
         # Multiplica na probabilidade total
         q *= p
 
@@ -163,14 +163,14 @@ def main():
     # -----------------------------------------------------------------------------
     # Esses parâmetros controlam como o modelo beam_range_finder interpreta as leituras do sensor.
     # Eles representam pesos e características estatísticas que misturam quatro modelos diferentes
-    # de ruído: p_hit, p_short, p_max e p_rand. A soma dos pesos z_hit, z_short, z_max e z_rand
+    # de ruído: p_hit, p_short, p_max e p_random. A soma dos pesos z_hit, z_short, z_max e z_rand
     # deve ser 1.0, pois eles formam uma combinação convexa (mistura de distribuições).
     #
     # A ideia: cada feixe do LIDAR pode vir de quatro "causas" possíveis:
     # - p_hit   : o feixe detectou corretamente a parede esperada, com ruído gaussiano.
     # - p_short : o feixe foi bloqueado por um obstáculo inesperado (ex.: gato), leitura mais curta.
     # - p_max   : o feixe não encontrou obstáculo e retornou o valor máximo do sensor.
-    # - p_rand  : o feixe deu uma leitura completamente aleatória (ruído puro).
+    # - p_random  : o feixe deu uma leitura completamente aleatória (ruído puro).
     #
     # Alterar esses valores muda como o modelo "confia" nas leituras. Abaixo, explicamos um a um:
     #
@@ -193,7 +193,7 @@ def main():
     #   - Menor valor → modelo espera sempre encontrar paredes (descarta leituras máximas).
     #
     # z_rand (0.1):
-    #   - Peso do modelo de leituras aleatórias (p_rand).
+    #   - Peso do modelo de leituras aleatórias (p_random).
     #   - Trata leituras totalmente erráticas como possíveis.
     #   - Maior valor → modelo tolera medições absurdas ou reflexos.
     #   - Menor valor → medições aleatórias derrubam a probabilidade da pose.
@@ -214,7 +214,7 @@ def main():
     #   - Alcance máximo do sensor LIDAR.
     #   - Usado para p_max e para limitar os outros cálculos.
     #   - Se muito baixo → truncará leituras válidas.
-    #   - Se muito alto → aumenta influência do modelo aleatório p_rand.
+    #   - Se muito alto → aumenta influência do modelo aleatório p_random.
     # -----------------------------------------------------------------------------
     params = {
         "z_hit": 0.6,
