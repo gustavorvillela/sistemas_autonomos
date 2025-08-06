@@ -25,9 +25,9 @@ if __name__ == "__main__":
     poses_y = np.random.uniform(1,9,poses_num)
 
     # Ângulos de raio
-    beam_angles = np.random.uniform(-np.pi/2, np.pi/2, poses_num)
-    poses = [(x, y, beam_angles[i]) for i, (x, y) in enumerate(zip(poses_x, poses_y))]
-
+    angles = np.random.uniform(-np.pi/2, np.pi/2, poses_num)
+    poses = [(x, y, angles[i]) for i, (x, y) in enumerate(zip(poses_x, poses_y))]
+    beam_angles = np.linspace(-np.pi/2, np.pi/2, 8)
     Z = []
     Z_exp = []
     for pose in poses:
@@ -41,9 +41,9 @@ if __name__ == "__main__":
     Z_exp = np.array(Z_exp)
 
     # Parâmetros iniciais
-    z_init = (0.7, 0.1, 0.1, 0.1, 0.2, 0.01)
+    z_init = (0.8, 0.1, 0.1, 0.1, 0.2, 0.01)
     # Aprender parâmetros intrínsecos
-    params = learn_intrinsic_parameters(Z, Z_exp, z_max, num_iters=N, params_init=z_init)
+    params = learn_intrinsic_parameters(Z, Z_exp, z_max, num_iters=N, params_init=z_init, tol=1e-6)
 
     print("Parâmetros aprendidos:")
     print(f"z_hit: {params['z_hit']}")

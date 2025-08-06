@@ -1,6 +1,6 @@
 import numpy as np
 import math
-
+from scipy.ndimage import distance_transform_edt
 from world import get_world
 
 def ray_intersection(pose, angle, walls_world):
@@ -82,6 +82,10 @@ def estimate_position(measurements, walls_world, initial_guess=(5.0, 5.0,math.pi
     result = minimize(cost_function, initial_guess, method='L-BFGS-B')
     return result.x
 
+def compute_distance_field(occupancy_grid, resolution):
+    free_space = occupancy_grid == 0
+    distance_pixels = distance_transform_edt(free_space)
+    return distance_pixels * resolution
 
 if __name__ == "__main__":
 
@@ -98,7 +102,7 @@ if __name__ == "__main__":
     noisy_distances = [d + np.random.normal(0, 0.1) if d is not None else None 
                         for d in true_distances]
 
-    estimated_pose = estimate_position(noisy_distances, walls_world)
+    #estimated_pose = estimate_position(noisy_distances, walls_world)
 
-    print(f"Pose real: {pose}")
-    print(f"Pose estimada: {estimated_pose}")
+    #print(f"Pose real: {pose}")
+    #print(f"Pose estimada: {estimated_pose}")

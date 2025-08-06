@@ -72,7 +72,79 @@ def plot_map(image):
     plt.title('Map')
     plt.grid(True)
     plt.axis('on')
-    
+
+
+def visualize_distance_field(distance_field, walls, origin, resolution=0.05):
+    """
+    Shows the distance to nearest obstacle (likelihood field).
+    """
+    ox, oy = origin
+    plt.figure(figsize=(8, 6))
+    plt.imshow(distance_field, origin='lower', cmap='plasma', extent=[
+        0, distance_field.shape[1] * resolution,
+        0, distance_field.shape[0] * resolution
+    ])
+    plt.colorbar(label='Distance (m)')
+
+    for (x1, y1), (x2, y2) in walls:
+        plt.plot([x1 - ox, x2 - ox], [y1 - oy, y2 - oy], 'k-', linewidth=2)
+
+    plt.title("Distance Field + Wall Segments")
+    plt.xlabel("X (meters)")
+    plt.ylabel("Y (meters)")
+    plt.grid(False)
+    plt.axis("equal")
+    #plt.show()
+
+def visualize_pose_with_measurements(pose, scan, walls, origin, distance_field, beam_angles, resolution=0.05, color='red'):
+    """
+    Draws the scan rays from a pose over the occupancy map and distance field.
+    """
+    ox, oy = origin
+    x, y, theta = pose
+
+    plt.figure(figsize=(8, 8))
+    h, w = int(10 / resolution), int(10 / resolution)  # match your occupancy grid bounds
+    extent = [0, w * resolution, 0, h * resolution]
+
+    plt.imshow(distance_field, origin='lower', cmap='plasma', extent=extent)
+    plt.colorbar(label='Distance to nearest obstacle (m)')
+
+    for d, a in zip(scan, beam_angles):
+        if d == 0.0 or np.isnan(d): continue
+        x_end = x + d * np.cos(theta + a)
+        y_end = y + d * np.sin(theta + a)
+        plt.plot([x, x_end], [y, y_end], color=color, alpha=0.6)
+
+    # Draw walls
+    for (x1, y1), (x2, y2) in walls:
+        plt.plot([x1, x2], [y1, y2], 'k-', linewidth=2)
+
+    plt.plot(x, y, 'bo')  # robot
+    plt.title("Scan Rays with Walls and Likelihood Field")
+    plt.xlabel("X (m)")
+    plt.ylabel("Y (m)")
+    plt.axis("equal")
+    plt.grid(True)
+    plt.show()
+
+def viz_likelihood(norm_likelihood,origin,resolution,grid,walls):
+
+     # Plot the likelihood field
+    ox, oy = origin
+    plt.figure(figsize=(8, 6))
+    plt.imshow(norm_likelihood, cmap='viridis', origin='lower', extent=[
+        origin[0], origin[0] + grid.shape[1] * resolution,
+        origin[1], origin[1] + grid.shape[0] * resolution
+    ])
+    for (x1, y1), (x2, y2) in walls:
+        plt.plot([x1 - ox, x2 - ox], [y1 - oy, y2 - oy], 'k-', linewidth=2)
+    plt.colorbar(label='Normalized Likelihood')
+    plt.title("Range Finder Likelihood Field")
+    plt.xlabel("X (m)")
+    plt.ylabel("Y (m)")
+    plt.grid(True)
+    plt.show()
 
 
 if __name__ == "__main__":
