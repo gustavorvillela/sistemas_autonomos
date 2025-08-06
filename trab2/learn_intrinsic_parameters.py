@@ -2,7 +2,7 @@ import numpy as np
 import math
 from beam_range_finder_model import p_hit, p_short, p_max, p_rand, simulate_beam_model_map,get_pose
 from lidar_ray_casting import simulate_lidar,get_beam_angles
-from world import get_world
+from map import load_map
 from numpy.typing import NDArray
 import matplotlib.pyplot as plt  
 from sklearn.decomposition import PCA
@@ -191,7 +191,8 @@ def generate_random_params(n=20):
 
 def main():
     # 1. Carregar mapa
-    walls_world = get_world()
+    _,_,fig_size,walls_world = load_map()
+    
 
     # 2. Aprender parâmetros ótimos usando dataset real/simulado
     pose_sets = generate_pose_sets(15, 10, 3)  # dataset para treinamento
@@ -218,6 +219,9 @@ def main():
     true_dists, _ = simulate_lidar(get_pose(), get_beam_angles(), walls_world)
     noisy_measurements = [d + np.random.normal(0, 0.1) for d in true_dists]
     xs, ys, prob_grid = simulate_beam_model_map(walls_world, noisy_measurements, best_params, get_beam_angles())
+    bx = xs.copy()
+    by = ys.copy()
+    bprob = prob_grid.copy()
     best_dispersion = calculate_dispersion(prob_grid)
 
     # 3. Gerar parâmetros aleatórios para comparação
@@ -262,7 +266,7 @@ def main():
         print(f"Menor entropia aleatória: {dispersions[best_random_idx]:.4f} (índice {best_random_idx})")
 
     # 7. Plotar gráfico
-    plt.figure(figsize=(8,6))
+    plt.figure(figsize=fig_size)
     plt.scatter(params_1d[1:], dispersions[1:], color='blue', label='Parâmetros Aleatórios')
 
     # Ponto do parâmetro aprendido
@@ -276,7 +280,15 @@ def main():
     plt.xlabel("PCA 1D")
     plt.ylabel("Entropia (Dispersão)")
     plt.legend()
-    plt.show()
 
+    plt.figure(figsize=fig_size)
+    # Mostra probabilidade (0-1) como cores; extent define limites reais em metros
+    plt.imshow(bprob, extent=[bx[0], bx[-1], by[0], by[-1]], origin='lower', cmap='hot')
+    plt.colorbar(label="Probabilidade normalizada")
+    # Marca a posição real do robô em azul
+    plt.plot(get_pose()[0], get_pose()[1], 'bo', label='Pose real')
+    plt.legend()
+    plt.title("Mapa de probabilidade - Beam Range Finder Model")
+    plt.show()
 if __name__ == "__main__":
     main()
