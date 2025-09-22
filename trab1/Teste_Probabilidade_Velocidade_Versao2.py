@@ -16,7 +16,7 @@ if __name__ == "__main__":
     
 
     # Parâmetros do modelo
-    alphas = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]  # Parâmetros de ruído
+    alphas = [0.005, 0.005, 0.1, 0.1, 0.5, 0.5]  # Parâmetros de ruído
     delta_t = 1
     xvel = deterministic_motion_model_velocity(x_prev, u, delta_t)
 

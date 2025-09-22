@@ -65,3 +65,18 @@ if __name__ == "__main__":
     N = 2000
     n = 3
     plot_mahalanobis_distance(mu, S, N, n)
+
+    S1 = np.array([[2, 0.2],
+               [0.2, 1]])
+
+    # 2. Negative correlation
+    S2 = np.array([[1, 0.3],
+                [0.3, 2]])
+
+    # 3. Strong correlation
+    S3 = np.array([[1.5, 1.0],
+                [1.0, 1.5]])
+
+    plot_mahalanobis_distance(mu, S1, N, n)
+    plot_mahalanobis_distance(mu, S2, N, n)
+    plot_mahalanobis_distance(mu, S3, N, n)

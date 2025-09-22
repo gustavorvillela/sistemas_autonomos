@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from intrinsic_param import learn_intrinsic_parameters
 from plot_utils import plot_combined_probabilities
 from probabilities import p_hit, p_short, p_random, p_max, calc_full_probabilities
-
+from map import load_map
 from world import get_world
 from estimar_pose_hough import simulate_lidar
 
@@ -32,8 +32,8 @@ if __name__ == "__main__":
     Z_exp = []
     for pose in poses:
         z_exp_i, _ = simulate_lidar(pose, beam_angles, walls_world)
-        z_measured = [d + np.random.normal(0, 0.5) if d is not None else 0.0 for d in z_exp_i]
-        
+        z_measured = [d + np.random.normal(0, 0.1) if d is not None else 0.0 for d in z_exp_i]
+
         Z.extend(z_measured)
         Z_exp.extend(z_exp_i)
 
@@ -56,8 +56,5 @@ if __name__ == "__main__":
     z_values = np.linspace(0, z_max, 1000)
     z_exp = np.mean(Z_exp)
     plot_combined_probabilities(z_exp, z_max, params)
-
-    
-
 
 

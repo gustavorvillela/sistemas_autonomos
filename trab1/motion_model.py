@@ -163,9 +163,13 @@ def deterministic_motion_model_velocity(x_prev, u, delta_t):
 
     theta_hat = theta + w_hat * delta_t 
 
-    r_hat = v_hat / w_hat
-    dx = -r_hat * np.sin(theta) + r_hat * np.sin(theta_hat)
-    dy = r_hat * np.cos(theta) - r_hat * np.cos(theta_hat)
+    if abs(w_hat) > 1e-6:
+        r_hat = v_hat / w_hat
+        dx = -r_hat * np.sin(theta) + r_hat * np.sin(theta_hat)
+        dy = r_hat * np.cos(theta) - r_hat * np.cos(theta_hat)
+    else:
+        dx = v_hat * delta_t * np.cos(theta)
+        dy = v_hat * delta_t * np.sin(theta)
 
 
     dtheta = w_hat * delta_t
